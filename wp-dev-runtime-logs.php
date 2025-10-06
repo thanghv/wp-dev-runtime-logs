@@ -66,6 +66,7 @@ class WP_Dev_Runtime_Logs {
         $messages_json = wp_json_encode( array_values( self::$queued_messages ) );
         // Inline script: iterate messages and call window.wpdevruntimelogs.log when available.
         // If wpdevruntimelogs not available yet, queue calls with a short retry (non-blocking).
+        //phpcs:ignore Squiz.PHP.Heredoc.NotAllowed
         $js = <<<JSCODE
 (function(){
   try {
@@ -93,7 +94,7 @@ class WP_Dev_Runtime_Logs {
   } catch(err) { try { console.log('[wpdevruntimelogs print error outer]', err); } catch(e) {} }
 })();
 JSCODE;
-
+        //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo "<script type=\"text/javascript\">{$js}</script>\n";
         // clear queued messages for this request
         self::$queued_messages = array();

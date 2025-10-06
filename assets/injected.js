@@ -923,7 +923,7 @@
                 const current = {
                     left: parseInt(box.style.left || box.offsetLeft || 20, 10),
                     top: parseInt(box.style.top || box.offsetTop || 20, 10),
-                    width: parseInt(box.style.width || box.offsetWidth || 480, 10),
+                    width: parseInt(box.style.width || box.offsetWidth || 760, 10),
                     height: parseInt(box.style.height || box.offsetHeight || 320, 10)
                 };
                 // Only save if it looks like a real normal layout
@@ -957,7 +957,7 @@
             if (!isValidNormalLayout(last)) last = null;
             const goodSaved = isValidNormalLayout(saved) ? saved : null;
 
-            const layoutToUse = last || goodSaved || { left: 20, top: 20, width: 480, height: 320 };
+            const layoutToUse = last || goodSaved || { left: 20, top: 20, width: 760, height: 320 };
 
             applyLayout(layoutToUse);
 
@@ -1036,7 +1036,7 @@
 
                 // Otherwise restore normal
                 // Prefer lastNormal if valid; else use saved; else default
-                const layoutToUse = validNormal(lastNormal) ? lastNormal : (validNormal(saved) ? saved : { left: 20, top: 20, width: 480, height: 320 });
+                const layoutToUse = validNormal(lastNormal) ? lastNormal : (validNormal(saved) ? saved : { left: 20, top: 20, width: 760, height: 320 });
                 log('restoring normal layout', layoutToUse);
 
                 // Use maximizeFlybox if available so it persists correctly
