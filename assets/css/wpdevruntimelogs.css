@@ -26,3 +26,25 @@
     background: #555;
     color: #fff;
 }
+
+.flybox-minimized .flybox-title {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 270px; /* adjust to your flybox header width */
+  background: #222;
+  color: #fff;
+  border-bottom: 1px solid #444;
+}
+
+.flybox-minimized .flybox-title-track {
+  display: inline-block;
+  padding-left: 100%;          /* start off to the right */
+  animation: flybox-marquee 8s linear infinite;
+}
+
+@keyframes flybox-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); } /* move half length for loop */
+}
+

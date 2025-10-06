@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WP Dev Runtime Logs
- * Plugin URI:  https://example.com/wp-dev-runtime-logs
+ * Plugin URI:  https://huedev.com/wp-dev-runtime-logs
  * Description: Monitor development logs and performance easily — a lightweight tool for developers, testers, and managers.
  * Version:     1.0
  * Author:      HueDev
- * Author URI:  https://example.com
+ * Author URI:  https://huedev.com
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wp-dev-runtime-logs

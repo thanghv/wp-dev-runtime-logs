@@ -483,7 +483,7 @@
             marginBottom: '6px',
             cursor: 'move',
             userSelect: 'none',
-            padding: '2px 12px',    // increased padding for taller header
+            padding: '2px 6px',    // increased padding for taller header
             minHeight: '40px',       // explicit taller header
             background: '#111117',
             borderTopLeftRadius: '8px',
@@ -491,11 +491,18 @@
         });
 
         // title
+        const titlewrap = document.createElement('div');
+        titlewrap.classList.add('flybox-title');
+
         const title = document.createElement('div');
+        title.classList.add('flybox-title-track');
+
         title.textContent = 'WPDevRuntimeLogs - Development Logs';
         title.style.fontWeight = '700';
         title.style.fontSize = '13px';
         title.style.lineHeight = '1';
+
+        titlewrap.appendChild(title);
 
         // header actions container (hidden when collapsed)
         const headerActions = document.createElement('div');
@@ -565,7 +572,7 @@
             gap: '6px',
             width: '100%'
         });
-        headerInner.appendChild(title);
+        headerInner.appendChild(titlewrap);
         header.appendChild(headerInner);
         header.appendChild(btnToggle);
 
@@ -1427,30 +1434,102 @@
                 box.style.top = (startTop + dy) + 'px';
             });
 
+            // document.addEventListener('mouseup', function () {
+            //     if (!dragging) return;
+            //     dragging = false;
+            //     document.body.style.userSelect = '';
+            //     box.style.boxShadow = ''; // optional cleanup
+            //     // Persist position (use numeric px strings)
+            //     try {
+            //         const pos = {
+            //             left: box.style.left || box.offsetLeft + 'px',
+            //             top: box.style.top || box.offsetTop + 'px',
+            //             // optionally save width/height or mode if you want
+            //             timestamp: Date.now()
+            //         };
+            //         localStorage.setItem(FLYBOX_POS_KEY, JSON.stringify(pos));
+            //         // If you have an existing layout persistence helper, call it too
+            //         if (typeof saveLastNormalLayout === 'function') {
+            //             try { saveLastNormalLayout(); } catch (e) { /* ignore */ }
+            //         }
+            //     } catch (e) {
+            //         console.error('Failed to save flybox position', e);
+            //     }
+            //     // restore any transitions
+            //     box.style.transition = '';
+            // });
+
             document.addEventListener('mouseup', function () {
                 if (!dragging) return;
                 dragging = false;
                 document.body.style.userSelect = '';
                 box.style.boxShadow = ''; // optional cleanup
-                // Persist position (use numeric px strings)
+
+                // normalize left/top into "NNNpx" strings
+                function toPx(value, fallback) {
+                    if (!value && value !== 0) return fallback;
+                    if (typeof value === 'number') return value + 'px';
+                    if (/^\d+$/.test(String(value))) return value + 'px';
+                    return String(value);
+                }
+
+                // compute current left/top (prefer inline style if present, else offset)
+                const computedLeft = (box.style.left && box.style.left !== '') ? box.style.left : (box.offsetLeft + 'px');
+                const computedTop = (box.style.top && box.style.top !== '') ? box.style.top : (box.offsetTop + 'px');
+
+                const pos = {
+                    left: toPx(computedLeft, box.offsetLeft + 'px'),
+                    top: toPx(computedTop, box.offsetTop + 'px'),
+                    timestamp: Date.now()
+                };
+
                 try {
-                    const pos = {
-                        left: box.style.left || box.offsetLeft + 'px',
-                        top: box.style.top || box.offsetTop + 'px',
-                        // optionally save width/height or mode if you want
-                        timestamp: Date.now()
-                    };
+                    // save to localStorage (your fallback/local source of truth)
                     localStorage.setItem(FLYBOX_POS_KEY, JSON.stringify(pos));
-                    // If you have an existing layout persistence helper, call it too
-                    if (typeof saveLastNormalLayout === 'function') {
-                        try { saveLastNormalLayout(); } catch (e) { /* ignore */ }
+                } catch (e) {
+                    console.error('Failed to save flybox position to localStorage', e);
+                }
+
+                // ALSO update your global UI state object if available so other layout code uses it
+                try {
+                    if (typeof loadGlobalUIState === 'function' && typeof saveGlobalUIState === 'function') {
+                        try {
+                            const state = loadGlobalUIState() || {};
+                            state.lastNormalLayout = state.lastNormalLayout || {};
+                            state.lastNormalLayout.flybox = state.lastNormalLayout.flybox || {};
+                            // store left/top in the structure your restore code expects
+                            state.lastNormalLayout.flybox.left = pos.left;
+                            state.lastNormalLayout.flybox.top = pos.top;
+                            saveGlobalUIState(state);
+                        } catch (e) {
+                            // don't fail the whole flow if global state helpers misbehave
+                            console.warn('Could not update global UI state for flybox position', e);
+                        }
                     }
                 } catch (e) {
-                    console.error('Failed to save flybox position', e);
+                    console.warn('Global UI state helpers unavailable or error', e);
                 }
+
+                // Try calling saveLastNormalLayout in a tolerant way:
+                if (typeof saveLastNormalLayout === 'function') {
+                    try {
+                        // If saveLastNormalLayout accepts a payload, pass the flybox part;
+                        // if not, calling with the arg will likely be ignored, but catch errors.
+                        saveLastNormalLayout({ flybox: { left: pos.left, top: pos.top } });
+                    } catch (err) {
+                        try {
+                            // fallback: call without args
+                            saveLastNormalLayout();
+                        } catch (err2) {
+                            console.warn('saveLastNormalLayout failed both with and without args', err2);
+                        }
+                    }
+                }
+
                 // restore any transitions
                 box.style.transition = '';
             });
+
         })();
 
         // Try to restore position. Wait until box exists and re-try a few times if needed.
