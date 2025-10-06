@@ -1,0 +1,28 @@
+#wpdevruntimelogs-flybox{
+    min-width: 320px !important;
+}
+#wpdevruntimelogs-header-actions{
+  display: flex;
+  flex-wrap: wrap;              /* buttons can wrap too */
+  gap: 4px;
+  justify-content: flex-end;
+}
+#wpdevruntimelogs-header-actions button {
+    display: flex;
+    align-items: center;     /* vertical center */
+    justify-content: center; /* horizontal center */
+    height: 28px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    font-size: 13px;
+    background: #555;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    color: #fff;
+    flex: 0 0 auto;
+}
+#wpdevruntimelogs-page-select{
+    background: #555;
+    color: #fff;
+}
